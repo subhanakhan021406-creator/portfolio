@@ -1,0 +1,171 @@
+:root{--bg:#05070b;--panel:#0d131b;--line:#1b2633;--ink:#eef6fa;--mute:#8a9bab;--neon:#04D9FF}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font:400 1rem/1.6 "DM Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:Syne,sans-serif;line-height:1}
+:focus-visible{outline:3px solid var(--neon);outline-offset:3px}
+.hero{max-width:1200px;margin:auto;padding:110px 24px 50px}
+.hero h1{font-size:clamp(3.6rem,13vw,9.5rem);font-weight:800;letter-spacing:-.03em;color:var(--neon);text-shadow:0 0 38px rgba(4,217,255,.45)}
+.hero p{margin:26px 0 0;max-width:30em;color:var(--mute);font-size:1.2rem}
+.btn{display:inline-flex;align-items:center;padding:13px 28px;border-radius:99px;border:1.5px solid var(--neon);color:var(--neon);font-weight:700;text-decoration:none;transition:background .2s,color .2s}
+.btn:hover{background:var(--neon);color:#000}
+.btn svg{width:20px;height:20px;fill:currentColor;margin-right:10px;flex:none}
+.contact-links{display:flex;flex-wrap:wrap;gap:14px}
+.grid{max-width:1200px;margin:auto;padding:0 24px;columns:3 300px;column-gap:22px}
+.card{break-inside:avoid;margin:0 0 22px;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.card:hover{border-color:var(--neon);box-shadow:0 0 28px rgba(4,217,255,.22)}
+.media{position:relative;width:100%;background:#0a1017;cursor:zoom-in}
+.media img{display:block;width:100%;height:100%;object-fit:cover}
+.media.empty{cursor:default;display:grid;place-items:center;background:repeating-linear-gradient(135deg,#0a1017 0 14px,#0d1620 14px 28px)}
+.media.empty::after{content:"Artwork coming soon";color:var(--mute);font-size:.95rem}
+.meta{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:14px 16px}
+.meta h3{font-size:1.1rem;font-weight:700}
+.meta span{display:none;color:var(--mute);font-size:.85rem}
+.tools{display:none;gap:8px;padding:0 16px 16px;flex-wrap:wrap}
+.edit .meta span,.edit .tools{display:flex}
+.edit .meta span{display:inline}
+.edit .media{cursor:default}
+/* Edit mode: empty cards show a big + that opens the file picker */
+.edit .media.empty{cursor:pointer}
+.edit .media.empty::after{content:"+";color:var(--neon);font-size:5rem;font-weight:300;line-height:1}
+.edit .media.empty:hover{background:#0f1c27}
+/* Edit mode: "+" tile at the end of the grid to add a new artwork */
+.addtile{display:none;break-inside:avoid;margin:0 0 22px}
+.edit .addtile{display:block}
+.addtile button{width:100%;aspect-ratio:4/5;border-radius:14px;border:2px dashed var(--neon);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:1rem}
+.addtile button span{font-size:5rem;font-weight:300;line-height:1}
+button,select{font:600 .9rem "DM Sans",sans-serif;padding:8px 14px;border-radius:99px;border:1px solid var(--neon);background:transparent;color:var(--neon);cursor:pointer}
+button:hover{background:var(--neon);color:#000}
+.tools .del{border-color:#ff5d73;color:#ff5d73}
+.tools .del:hover{background:#ff5d73;color:#000}
+select{background:#0d131b;color:var(--ink);border-color:var(--line)}
+footer{max-width:1200px;margin:60px auto 0;padding:70px 24px 110px;border-top:1px solid var(--line)}
+footer h2{font-size:clamp(1.8rem,5vw,3rem);margin-bottom:12px}
+footer p{color:var(--mute);margin-bottom:24px}
+#editbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:12px;align-items:center;padding:10px 16px;background:#0d131bee;border:1px solid var(--neon);border-radius:99px;z-index:5;backdrop-filter:blur(8px)}
+#editbar[hidden]{display:none}
+dialog{border:0;background:transparent;max-width:96vw;max-height:96vh;padding:0}
+dialog::backdrop{background:rgba(0,0,0,.88)}
+dialog img{max-width:96vw;max-height:88vh;display:block;margin:auto;border-radius:10px}
+dialog button{display:block;margin:12px auto 0}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* =====================================================================
+   ✨ ADVANCED ANIMATIONS & GLOW EFFECTS (added) — original code above untouched
+   ===================================================================== */
+@property --a{syntax:"<angle>";initial-value:0deg;inherits:false}
+:root{--violet:#8a5cff;--ease:cubic-bezier(.2,.8,.2,1)}
+html{scroll-behavior:smooth}
+::selection{background:var(--neon);color:#000}
+
+/* --- background layers (created by JS) --- */
+#fx-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:-2;pointer-events:none}
+.orbs{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.orbs i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.28;animation:float 18s ease-in-out infinite alternate}
+.orbs i:nth-child(1){width:46vmax;height:46vmax;background:var(--neon);left:-14vmax;top:-10vmax}
+.orbs i:nth-child(2){width:38vmax;height:38vmax;background:var(--violet);right:-12vmax;top:30vh;animation-duration:24s;animation-delay:-6s}
+.orbs i:nth-child(3){width:32vmax;height:32vmax;background:#0077ff;left:20vw;bottom:-16vmax;animation-duration:21s;animation-delay:-11s}
+@keyframes float{0%{transform:translate(0,0) scale(1)}50%{transform:translate(6vmax,-4vmax) scale(1.15)}100%{transform:translate(-5vmax,6vmax) scale(.92)}}
+
+/* --- scroll progress bar + cursor glow --- */
+#progress{position:fixed;left:0;top:0;height:3px;width:100%;background:linear-gradient(90deg,var(--neon),var(--violet),var(--neon));background-size:200% 100%;transform-origin:left;transform:scaleX(0);z-index:50;box-shadow:0 0 14px var(--neon),0 0 30px var(--neon);animation:slide 3s linear infinite}
+@keyframes slide{to{background-position:-200% 0}}
+#cursor-glow{position:fixed;left:0;top:0;width:420px;height:420px;margin:-210px 0 0 -210px;border-radius:50%;background:radial-gradient(circle,rgba(4,217,255,.16),transparent 62%);pointer-events:none;z-index:1;mix-blend-mode:screen;will-change:transform}
+
+/* --- hero --- */
+.hero{transform:translateY(calc(var(--sy,0)*1px));opacity:var(--ho,1);will-change:transform}
+.hero h1{cursor:default;animation:heroIn 1.3s var(--ease) both,neonPulse 3.6s ease-in-out 1.3s infinite alternate;transition:letter-spacing .5s var(--ease)}
+.hero h1:hover{letter-spacing:.01em;animation:heroIn 1.3s var(--ease) both,glitch .5s steps(2) 2,neonPulse 3.6s ease-in-out 1.3s infinite alternate}
+.hero p{animation:fadeUp 1s var(--ease) .6s both}
+@keyframes heroIn{from{opacity:0;transform:translateY(50px) scale(.92);filter:blur(18px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes neonPulse{
+  from{text-shadow:0 0 20px rgba(4,217,255,.35),0 0 50px rgba(4,217,255,.2)}
+  to{text-shadow:0 0 30px rgba(4,217,255,.8),0 0 70px rgba(4,217,255,.55),0 0 120px rgba(138,92,255,.35)}}
+@keyframes glitch{
+  0%{text-shadow:4px 0 #ff2d75,-4px 0 var(--neon)}
+  50%{text-shadow:-4px 2px #ff2d75,4px -2px var(--neon)}
+  100%{text-shadow:2px 0 #ff2d75,-2px 0 var(--neon)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+/* --- scroll reveal (class added by JS) --- */
+.reveal{opacity:0;translate:0 46px}
+.reveal.in{opacity:1;translate:0 0}
+
+/* --- cards --- */
+.card{position:relative;transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+  transition:border-color .25s,box-shadow .35s,opacity .8s var(--ease) var(--d,0ms),translate .8s var(--ease) var(--d,0ms),transform .25s ease-out,scale .35s var(--ease)}
+.card:hover{scale:1.025;box-shadow:0 0 0 1px rgba(4,217,255,.5),0 0 34px rgba(4,217,255,.35),0 24px 60px rgba(0,0,0,.6);z-index:2}
+/* rotating glowing border */
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;pointer-events:none;z-index:4;opacity:0;transition:opacity .35s;
+  background:conic-gradient(from var(--a),transparent 0 55%,var(--neon) 72%,var(--violet) 88%,transparent);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  animation:spin 3.5s linear infinite}
+.card:hover::before{opacity:1}
+@keyframes spin{to{--a:360deg}}
+/* mouse-following spotlight */
+.card::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:3;opacity:0;transition:opacity .3s;
+  background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(4,217,255,.2),transparent 60%)}
+.card:hover::after{opacity:1}
+/* image zoom + light sweep */
+.media{overflow:hidden}
+.media img{transition:transform .8s var(--ease),filter .5s;transform-origin:center}
+.card:hover .media img{transform:scale(1.08);filter:saturate(1.18) brightness(1.06)}
+.media::before{content:"";position:absolute;top:0;left:0;width:55%;height:100%;z-index:2;pointer-events:none;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.22),transparent);transform:translateX(-130%) skewX(-18deg)}
+.card:hover .media::before{transform:translateX(260%) skewX(-18deg);transition:transform 1s var(--ease)}
+/* title glow */
+.meta h3{transition:color .3s,text-shadow .3s,transform .3s var(--ease)}
+.card:hover .meta h3{color:var(--neon);text-shadow:0 0 14px rgba(4,217,255,.7);transform:translateX(5px)}
+/* empty placeholder shimmer */
+.media.empty{background-size:200% 200%;animation:stripes 6s linear infinite}
+.media.empty::after{animation:breathe 2.4s ease-in-out infinite}
+@keyframes stripes{to{background-position:56px 56px}}
+@keyframes breathe{50%{opacity:.45;text-shadow:0 0 16px var(--neon)}}
+
+/* --- buttons --- */
+.btn,button{position:relative;overflow:hidden}
+.btn{transition:background .25s,color .25s,box-shadow .3s,scale .3s var(--ease),translate .2s ease-out;animation:btnGlow 3s ease-in-out infinite}
+.btn::before,button::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);transform:translateX(-120%);pointer-events:none}
+.btn:hover::before,button:hover::before{transform:translateX(120%);transition:transform .7s var(--ease)}
+.btn:hover{scale:1.07;box-shadow:0 0 18px var(--neon),0 0 44px rgba(4,217,255,.6);animation:none}
+.btn svg{transition:transform .4s var(--ease)}
+.btn:hover svg{transform:rotate(-12deg) scale(1.2)}
+.btn>*{position:relative}
+@keyframes btnGlow{0%,100%{box-shadow:0 0 0 rgba(4,217,255,0)}50%{box-shadow:0 0 18px rgba(4,217,255,.45)}}
+button{transition:background .2s,color .2s,box-shadow .25s,scale .2s}
+button:hover{box-shadow:0 0 14px rgba(4,217,255,.7);scale:1.05}
+button:active{scale:.96}
+.tools .del:hover{box-shadow:0 0 14px rgba(255,93,115,.8)}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.5);transform:scale(0);animation:ripple .6s ease-out forwards;pointer-events:none}
+@keyframes ripple{to{transform:scale(3.5);opacity:0}}
+
+/* --- footer --- */
+footer{position:relative}
+footer::before{content:"";position:absolute;left:24px;top:-1px;height:2px;width:0;background:linear-gradient(90deg,var(--neon),var(--violet));box-shadow:0 0 14px var(--neon);transition:width 1.4s var(--ease)}
+footer.line::before{width:calc(100% - 48px)}
+footer h2{transition:text-shadow .4s,color .4s}
+footer h2:hover{color:var(--neon);text-shadow:0 0 26px rgba(4,217,255,.7)}
+
+/* --- add tile + edit bar --- */
+.addtile button{transition:background .25s,box-shadow .3s,scale .3s var(--ease);animation:dashPulse 2.4s ease-in-out infinite}
+.addtile button:hover{box-shadow:0 0 30px rgba(4,217,255,.5),inset 0 0 30px rgba(4,217,255,.15);scale:1.02}
+.addtile button span{transition:transform .5s var(--ease)}
+.addtile button:hover span{transform:rotate(90deg) scale(1.2)}
+@keyframes dashPulse{50%{box-shadow:0 0 22px rgba(4,217,255,.3)}}
+#editbar{animation:slideUp .6s var(--ease) both;box-shadow:0 0 26px rgba(4,217,255,.35)}
+@keyframes slideUp{from{opacity:0;transform:translate(-50%,40px)}to{opacity:1;transform:translateX(-50%)}}
+
+/* --- lightbox --- */
+dialog[open]{animation:zoomIn .45s var(--ease)}
+dialog[open]::backdrop{animation:fade .4s ease both;backdrop-filter:blur(10px)}
+dialog img{box-shadow:0 0 0 1px rgba(4,217,255,.5),0 0 50px rgba(4,217,255,.4),0 30px 90px rgba(0,0,0,.8)}
+@keyframes zoomIn{from{opacity:0;transform:scale(.82) translateY(30px);filter:blur(8px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+/* --- accessibility: respect reduced motion & touch devices --- */
+@media(hover:none){#cursor-glow{display:none}.card:hover{scale:1}}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .reveal{opacity:1;translate:none}
+  .hero{transform:none;opacity:1}
+  #cursor-glow,#fx-canvas{display:none}
+}
